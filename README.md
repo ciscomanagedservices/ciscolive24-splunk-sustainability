@@ -85,10 +85,11 @@ Some of these macros need to be adjusted to work with OpenTelemetry data as they
     | spath input=metrics output=dataPoints path=gauge.dataPoints{} 
     | mvexpand dataPoints 
     | spath input=dataPoints path=asDouble output=powerConsumed 
-    | spath input=dataPoints path=timeUnixNano output=timeUnixNano 
-    | eval _time=strftime(tonumber(timeUnixNano)/1e9, "%F %T"), AverageConsumedkW=round(powerConsumed/1000, 3) 
+    | spath input=dataPoints path=startTimeUnixNano output=startTimeUnixNano 
+    | eval _time=startTimeUnixNano/pow(10,9), AverageConsumedkW=round(powerConsumed/1000, 3)
     | rename hostname as "Asset IP" 
-    | table _time, "Asset IP", AverageConsumedkW
+    | bin _time span=1h
+    | stats avg(AverageConsumedkW) as AverageConsumedkW by _time "Asset IP"
     ```
     This formats the OTel json into the format that Splunk Sustainability Toolkit expects to see.
     Edit permissions on `power-otel` for everyone the Sustainability Toolkit app to read and write the search.
@@ -103,7 +104,8 @@ Some of these macros need to be adjusted to work with OpenTelemetry data as they
 
 1. In Splunk, browse to **Settings > Advanced Search > Search Macros**.
 2. Clone `electricity-carbon-intensity-for-assets` and rename it to `electricity-carbon-intensity-for-assets-old`.
-3. Edit `electricity-carbon-intensity-for-assets` to be replaced with the following:
+3. Edit `electricity-carbon-intensity-for-assets` to replace it with the following:
+
     ```spl
     index=`electricity-carbon-intensity-index` 
         [         
@@ -140,8 +142,36 @@ Some of these macros need to be adjusted to work with OpenTelemetry data as they
 <summary><strong>Enabling scheduled summarization in sustainability toolkit</strong></summary>
 
 1. Browse to **Settings > Knowledge > Searches, Reports, and Alerts**. You may need to change the owner search to All.
-2. Edit search for `Summarize Asset CO2e & kW V1.0` and `Summarize Electricity CO2e/kWh V1.0` and remove the commented `mcollect` lines in both searches.
-3. **Edit > Edit schedule** for those searches to run hourly. *Note:* You can run them more frequent if you need to troubleshoot setup, but carbon intensity data still summarizes in 1h spans, so some of the dashboard may lag to populate.
+2. Edit search for `Summarize Asset CO2e & kW V1.0` to the following: 
+
+    ```spl
+    | union 
+        [ `power-asset-location`] 
+        [ `electricity-carbon-intensity-for-assets` 
+        | foreach Intensity_* matchseg1=SEG1 
+            [ eval 
+                Intensity_SEG1 = exact('Intensity_SEG1'/1000)
+                ] ] 
+    | stats first(*) as * by _time
+    | foreach kW!*!location!* matchseg1=SEG1 matchseg2=SEG2 
+        [ eval CO2e!SEG1 = exact(if(isnull('CO2e!SEG1'), 0, 'CO2e!SEG1') + ('<<FIELD>>' * 'Intensity_SEG2'/6))] 
+    | fields - Intensity_* 
+    | untable _time, Type, value 
+    | rex field=Type "^(?<Type>[^\!]+)\!(?<Asset>[^\!]+)($|\!)" 
+    | eval {Type}=value 
+    | fields - Type value 
+    | stats first(*) AS * by _time, Asset 
+    | eval metric_name:asset.electricity.kWh=exact(kW/6) 
+    | lookup `cmdb-lookup-name` "Asset IP" AS Asset OUTPUTNEW "Site", Country, Application, "Embodied CO2e", "Years Lifetime" 
+    | eval metric_name:asset.CO2e.embodied=exact('Embodied CO2e'/('Years Lifetime'*365*24*6)) 
+    | rename Asset as "Asset IP" 
+    | fields - "Embodied CO2e", "Years Lifetime" 
+    | rename CO2e AS metric_name:asset.CO2e.electricity kW AS metric_name:asset.electricity.kW.mean
+    | mcollect index=`summary-asset-metrics-index` marker="Report=Summarize Asset CO2e & kW V1.0" "Asset IP", "Site", Country, Application
+    ```
+
+3. Edit search for `Summarize Electricity CO2e/kWh V1.0` and remove the commented `mcollect` line.
+4. **Edit > Edit schedule** for those searches to run hourly. *Note:* You can run them more frequent if you need to troubleshoot setup, but carbon intensity data still summarizes in 1h spans, so some of the dashboard may lag to populate.
 
 </details>
 
