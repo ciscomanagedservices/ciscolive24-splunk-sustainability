@@ -51,7 +51,7 @@ graph LR;
                 4. Electricity Maps Account: `myemapsaccount`
                 5. Zone(s): `CH,DE,US-CAR-DUK,US-CAL-LDWP`
         4. (optional; if you want predictive trends) [Machine Learning Toolkit](https://splunkbase.splunk.com/app/2890) & [Python for Scientific Computing](https://splunkbase.splunk.com/app/2882)
-    3. Follow instructions in the sections below to get the Sustainability Toolkit to work with Intersight OpenTelemtry data
+    3. Follow instructions in the sections below to get the Sustainability Toolkit to work with Intersight OpenTelemetry data
 
 
 ### Working with the Splunk Sustainability Toolkit
