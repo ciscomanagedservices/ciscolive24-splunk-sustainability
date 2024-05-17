@@ -1,0 +1,7 @@
+|`electricity-carbon-intensity`
+| untable _time, LocationDetails, "metric_name:electricity.CO2e per kWh"
+| rex field=LocationDetails "(?<LocationName>.*)\|(?<LocationCode>.*)"
+| rename LocationName AS "Location Name", LocationCode AS "Location Code"
+```| eval "metric_name:electricity.Cost per kWh"=0```
+| fields - LocationDetails
+| mcollect index=`summary-electricity-metrics-index` marker="Report=Summarize Electricity CO2e/kWh V1.0" "Location Name", "Location Code"

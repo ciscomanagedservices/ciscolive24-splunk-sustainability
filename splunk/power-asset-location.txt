@@ -1,0 +1,6 @@
+search `power-otel` 
+| lookup `cmdb-lookup-name` "Asset IP" OUTPUTNEW Site 
+| lookup `sites-lookup-name` "Site" OUTPUTNEW "Electricity CO2e per kWh Source" "Electricity CO2e per kWh Source Location Code" 
+| eval LocationCode='Electricity CO2e per kWh Source'."/".'Electricity CO2e per kWh Source Location Code' 
+| eval Asset="kW!".'Asset IP'."!location!".LocationCode 
+| xyseries _time, Asset, AverageConsumedkW

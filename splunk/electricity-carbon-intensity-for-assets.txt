@@ -1,0 +1,27 @@
+| search index=`electricity-carbon-intensity-index` 
+    [         
+    | search index="otel" 
+    | stats values(hostname) as "Asset IP" 
+    | mvexpand "Asset IP" 
+    | lookup `cmdb-lookup-name` "Asset IP" OUTPUTNEW Site 
+    | lookup `sites-lookup-name` "Site" OUTPUTNEW "Electricity CO2e per kWh Source" "Electricity CO2e per kWh Source Location Code" 
+    | fields "Electricity CO2e per kWh Source" "Electricity CO2e per kWh Source Location Code" 
+    | dedup "Electricity CO2e per kWh Source" "Electricity CO2e per kWh Source Location Code"
+    | eval sourcetype='Electricity CO2e per kWh Source' 
+    | eval postcode=if('Electricity CO2e per kWh Source'=="NG:carbonintensity:postcode",'Electricity CO2e per kWh Source Location Code',NULL) 
+    | eval zone=if('Electricity CO2e per kWh Source'=="EM:carbonintensity",'Electricity CO2e per kWh Source Location Code',NULL) 
+    | fields sourcetype, postcode, zone ] 
+| eval co2perkWh=coalesce(carbonIntensity,'intensity.forecast') 
+| eval LocationCode="Intensity_".sourcetype."/".coalesce(zone,postcode) 
+| eval _time=floor(_time) 
+| appendpipe 
+    [| head 1 
+    | fields _time 
+    | addinfo 
+    | eval TimeList=mvrange(info_min_time,info_max_time,"10m") 
+    | mvexpand TimeList 
+    | rename TimeList AS _time 
+    | eval LocationCode=0, co2perkWh="" ] 
+| xyseries _time, LocationCode, co2perkWh
+| fields - 0 
+| filldown

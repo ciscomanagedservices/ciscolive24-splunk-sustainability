@@ -1,0 +1,23 @@
+| union 
+    [ `power-asset-location`] 
+    [ `electricity-carbon-intensity-for-assets` 
+    | foreach Intensity_* matchseg1=SEG1 
+        [ eval 
+            Intensity_SEG1 = exact('Intensity_SEG1'/1000)
+            ] ] 
+| stats first(*) as * by _time
+| foreach kW!*!location!* matchseg1=SEG1 matchseg2=SEG2 
+    [ eval CO2e!SEG1 = exact(if(isnull('CO2e!SEG1'), 0, 'CO2e!SEG1') + ('<<FIELD>>' * 'Intensity_SEG2'/6))] 
+| fields - Intensity_* 
+| untable _time, Type, value 
+| rex field=Type "^(?<Type>[^\!]+)\!(?<Asset>[^\!]+)($|\!)" 
+| eval {Type}=value 
+| fields - Type value 
+| stats first(*) AS * by _time, Asset 
+| eval metric_name:asset.electricity.kWh=exact(kW/6) 
+| lookup `cmdb-lookup-name` "Asset IP" AS Asset OUTPUTNEW "Site", Country, Application, "Embodied CO2e", "Years Lifetime" 
+| eval metric_name:asset.CO2e.embodied=exact('Embodied CO2e'/('Years Lifetime'*365*24*6)) 
+| rename Asset as "Asset IP" 
+| fields - "Embodied CO2e", "Years Lifetime" 
+| rename CO2e AS metric_name:asset.CO2e.electricity kW AS metric_name:asset.electricity.kW.mean
+| mcollect index=`summary-asset-metrics-index` marker="Report=Summarize Asset CO2e & kW V1.0" "Asset IP", "Site", Country, Application

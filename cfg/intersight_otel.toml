@@ -1,0 +1,62 @@
+otel_collector_endpoint = "http://127.0.0.1:4317"
+intersight_accept_invalid_certs = true
+
+# You need to add the certificate key_file, and also update the key_id. These are available in Intersight> System> Settings> API> API Keys.
+key_file = "./secrets/intersight.pem"
+key_id = "5e878d3e7564612d304bbaaf/6616d9c67564613101559a18/6616dae67564613101559ebc"
+
+[[tspollers]]
+name = "hw.host.power"
+datasource = "PhysicalEntities"
+dimensions = ["host.name"]
+filter = {type="and",fields=[{type="selector",dimension="instrument.name",value="hw.host"}]}
+aggregations = [{type="longSum",name="count",fieldName="hw.host.power_count"},{type="doubleSum",name="hw.host.power-Sum",fieldName="hw.host.power"}]
+postAggregations = [{type="expression",name="hw-host-power-Avg",expression="(\"hw.host.power-Sum\" / \"count\")"}]
+field_names = ["hw.host.power-Sum"]
+otel_dimension_to_attribute_map = { "host.name" = "host.name" }
+interval = 300
+
+# You may also be interested in these other metrics for sustainability, but they are not used by the Splunk Sustainability Toolkit, so they are commented out. Remove the comments if you would like to collect these additional metrics from Intersight.
+# [[tspollers]]
+# name = "hw.host.energy"
+# datasource = "PhysicalEntities"
+# dimensions = ["host.name"]
+# filter = {type="and",fields=[{type="selector",dimension="instrument.name",value="hw.host"}]}
+# aggregations = [{type="doubleSum",name="hw.host.energy_duration-Sum",fieldName="hw.host.energy_duration"},{type="doubleSum",name="hw.host.energy-SumAg",fieldName="hw.host.energy"}]
+# postAggregations = [{type="expression",name="hw-host-energy-Sum",expression="((\"hw.host.energy-SumAg\" * 600) / \"hw.host.energy_duration-Sum\")"}]
+# field_names = ["hw.host.energy_duration-Sum","host.name"]
+# otel_dimension_to_attribute_map = { "host.name" = "host.name" }
+# interval = 300
+
+# [[tspollers]]
+# name = "hw.temperature"
+# datasource = "PhysicalEntities"
+# dimensions = ["host.name"]
+# filter = {type="and",fields=[{type="selector",dimension="instrument.name",value="hw.temperature"}]}
+# aggregations = [{type="longSum",name="count",fieldName="hw.temperature_count"},{type="doubleSum",name="hw.temperature-Sum",fieldName="hw.temperature"}]
+# postAggregations = [{type="expression",name="hw-temperature-Avg",expression="(\"hw.temperature-Sum\" / \"count\")"}]
+# field_names = ["hw.temperature-Sum","host.name"]
+# otel_dimension_to_attribute_map = { "host.name" = "host.name" }
+# interval = 300
+
+# [[tspollers]]
+# name = "system.cpu.utilization_user"
+# datasource = "PhysicalEntities"
+# dimensions = ["host.name"]
+# filter = {type="and",fields=[{type="selector",dimension="instrument.name",value="system.cpu"}]}
+# aggregations = [{type="longSum",name="count",fieldName="system.cpu.utilization_user_count"},{type="doubleSum",name="system.cpu.utilization_user-Sum",fieldName="system.cpu.utilization_user"}]
+# postAggregations = [{type="expression",name="system-cpu-utilization_user-Avg",expression="(\"system.cpu.utilization_user-Sum\" / \"count\")"}]
+# field_names = ["system.cpu.utilization_user-Sum","host.name"]
+# otel_dimension_to_attribute_map = { "host.name" = "host.name" }
+# interval = 300
+
+# [[tspollers]]
+# name = "system.cpu.utilization_system"
+# datasource = "PhysicalEntities"
+# dimensions = ["host.name"]
+# filter = {type="and",fields=[{type="selector",dimension="instrument.name",value="system.cpu"}]}
+# aggregations = [{type="longSum",name="count",fieldName="system.cpu.utilization_system_count"},{type="doubleSum",name="system.cpu.utilization_system-Sum",fieldName="system.cpu.utilization_system"}]
+# postAggregations = [{type="expression",name="system-cpu-utilization_system-Avg",expression="(\"system.cpu.utilization_system-Sum\" / \"count\")"}]
+# field_names = ["system.cpu.utilization_system-Sum","host.name"]
+# otel_dimension_to_attribute_map = { "host.name" = "host.name" }
+# interval = 300
