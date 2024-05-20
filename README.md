@@ -35,19 +35,19 @@ graph LR;
 
 1. Setup Intersight OpenTelemetry Collection
     1. [intersight-otel](https://github.com/cgascoig/intersight-otel): The easiest way to get started may be to pull down a binary of the [latest release](https://github.com/cgascoig/intersight-otel/releases) (for more information on this utility, check out Chris Gascoigne's Cisco Live 2023 [session slides](https://www.ciscolive.com/c/dam/r/ciscolive/emea/docs/2024/pdf/DEVNET-2118.pdf)). See [intersight_otel.toml](/cfg/intersight_otel.toml) for example confguration.
-2. Setup an OpenTelemetry Collector & Splunk Forwarder (install on the same host)
+2. Setup an OpenTelemetry Collector & Splunk Forwarder (install on the same host).
     1. [otelcol](https://github.com/open-telemetry/opentelemetry-collector): The The easiest way to get started may be to pull down a binary of the [latest release](https://github.com/open-telemetry/opentelemetry-collector/releases). See [otelcol.yaml](/cfg/intersight_otel.toml) for example confguration.
-    2. [splunkforwarder](https://www.splunk.com/en_us/download/universal-forwarder.html?locale=en_us): follow the instructions [here](https://docs.splunk.com/Documentation/Forwarder/9.2.1/Forwarder/Abouttheuniversalforwarder).
+    2. [splunkforwarder](https://www.splunk.com/en_us/download/universal-forwarder.html?locale=en_us): Follow the instructions [here](https://docs.splunk.com/Documentation/Forwarder/9.2.1/Forwarder/Abouttheuniversalforwarder).
 3. Start data collection from Intersight
-	1. Run `otelcol`. (e.g. `./otelcol --config=./cfg/otelcol.yaml`)
-	2. Run `intersight-otel` (e.g. `./intersight-otel --config=./cfg/intersight_otel.toml`)
+	1. Run `otelcol`. (e.g. `./otelcol --config=./cfg/otelcol.yaml`).
+	2. Run `intersight-otel` (e.g. `./intersight-otel --config=./cfg/intersight_otel.toml`).
 	3. You should start seeing data write to a file (e.g. `./data/otelcol-export.jsonl`).
 4. Setup Splunk Enterprise
     1. Download & install the following from Splunkbase: 
-        1. [Splunk Sustainability Toolkit](https://splunkbase.splunk.com/app/6343)
-        2. [Splunk App for Lookup File Editing](https://splunkbase.splunk.com/app/1724)
-        3. [Splunk Add-on for Electricity Carbon Intensity](https://splunkbase.splunk.com/app/7089) 
-        4. (optional; if you want predictive trends) [Machine Learning Toolkit](https://splunkbase.splunk.com/app/2890) & [Python for Scientific Computing](https://splunkbase.splunk.com/app/2882)
+        1. [Splunk Sustainability Toolkit](https://splunkbase.splunk.com/app/6343).
+        2. [Splunk App for Lookup File Editing](https://splunkbase.splunk.com/app/1724).
+        3. [Splunk Add-on for Electricity Carbon Intensity](https://splunkbase.splunk.com/app/7089) .
+        4. (optional; if you want predictive trends) [Machine Learning Toolkit](https://splunkbase.splunk.com/app/2890) & [Python for Scientific Computing](https://splunkbase.splunk.com/app/2882).
         5. Create a new events index called `otel` in the app `Sustainability_Toolkit` for the OpenTelemetry events streaming from the forwarder (in production, it is assumed that OpenTelemetry from multiple sources lands in this index; you could differentiate the sources, for example: Cisco Intersight, AWS CloudWatch etc. using the `source`, `sourcetype` or `host` fields in Splunk). 
      2. Follow instructions in the sections below to get the Sustainability Toolkit to work with Intersight OpenTelemetry data.
 
