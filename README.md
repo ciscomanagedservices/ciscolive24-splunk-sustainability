@@ -60,7 +60,7 @@ Numerous Search Macros and Saved Searches/Reports are used to break up the SPL u
 
 ![SST Macro Sankey Diagram](/static/macro-sankey.png)
 
-A detailed description of each search macro is available within the app under **Documentation > Object Reference > Object Reference: Search Macros**
+A detailed description of each search macro is available within the app under **Documentation > Object Reference > Object Reference: Search Macros**.
 
 Some of these macros need to be adjusted to work with OpenTelemetry data as they have been authored to support Redfish data by default.
 
@@ -69,7 +69,7 @@ Some of these macros need to be adjusted to work with OpenTelemetry data as they
 
 <details><summary><strong>Setting up electricity carbon intensity collection</strong></summary>
             
-1. Create a new events index `electricity_carbon_intensity`
+1. Create a new events index `electricity_carbon_intensity`.
 
 2. Navigate to the Splunk Add-on for Electricity Carbon Intensity to add your electricity maps account under **Configuration > Add** with the URL `https://api.electricitymap.org/v3` & your API key.
 
@@ -81,7 +81,6 @@ Some of these macros need to be adjusted to work with OpenTelemetry data as they
     5. Zone(s): `CH,DE,US-CAR-DUK,US-CAL-LDWP`
 
 </details>
-
 <details>
 <summary><strong>Adjust Power Macros</strong></summary>
 
