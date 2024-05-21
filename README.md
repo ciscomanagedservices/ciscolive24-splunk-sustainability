@@ -45,8 +45,8 @@ graph LR;
 4. Setup Splunk Enterprise
     1. Download & install the following from Splunkbase: 
         1. [Splunk Sustainability Toolkit](https://splunkbase.splunk.com/app/6343).
-        2. [Splunk App for Lookup File Editing](https://splunkbase.splunk.com/app/1724).
-        3. [Splunk Add-on for Electricity Carbon Intensity](https://splunkbase.splunk.com/app/7089) .
+        2. [Splunk Add-on for Electricity Carbon Intensity](https://splunkbase.splunk.com/app/7089).
+        3. (optional; if you want the ability to edit lookup files in Splunk GUI directly) [Splunk App for Lookup File Editing](https://splunkbase.splunk.com/app/1724).
         4. (optional; if you want predictive trends) [Machine Learning Toolkit](https://splunkbase.splunk.com/app/2890) & [Python for Scientific Computing](https://splunkbase.splunk.com/app/2882).
         5. Create a new events index called `otel` in the app `Sustainability_Toolkit` for the OpenTelemetry events streaming from the forwarder (in production, it is assumed that OpenTelemetry from multiple sources lands in this index; you could differentiate the sources, for example: Cisco Intersight, AWS CloudWatch etc. using the `source`, `sourcetype` or `host` fields in Splunk). 
      2. Follow instructions in the sections below to get the Sustainability Toolkit to work with Intersight OpenTelemetry data.
