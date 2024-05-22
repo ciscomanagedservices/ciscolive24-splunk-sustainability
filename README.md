@@ -45,8 +45,18 @@ graph LR;
 4. Setup Splunk Enterprise
     1. Download & install the following from Splunkbase: 
         1. [Splunk Sustainability Toolkit](https://splunkbase.splunk.com/app/6343).
-        2. [Splunk App for Lookup File Editing](https://splunkbase.splunk.com/app/1724).
-        3. [Splunk Add-on for Electricity Carbon Intensity](https://splunkbase.splunk.com/app/7089) .
+        2. [Splunk Add-on for Electricity Carbon Intensity](https://splunkbase.splunk.com/app/7089).
+            1. Create a new events index `electricity_carbon_intensity`.
+            2. Navigate to the Splunk Add-on for Electricity Carbon Intensity to add your electricity maps account under **Configuration > Add** with the URL `https://api.electricitymap.org/v3` & your API key.
+            3. Go to **Inputs > Create New Input**, select **Electricity Maps Carbon Intensity - Latest** & configure one or more electricity data inputs. See Electricity Maps zone documentation for a list of available zones:
+                ```
+                Name: myemaps
+                Interval: 3600
+                Index: electricity_carbon_intensity
+                Electricity Maps Account: myemapsaccount
+                Zone(s): CH,DE,US-CAR-DUK,US-CAL-LDWP
+                ```
+        3. (optional; if you want the ability to edit lookup files in Splunk GUI directly) [Splunk App for Lookup File Editing](https://splunkbase.splunk.com/app/1724).
         4. (optional; if you want predictive trends) [Machine Learning Toolkit](https://splunkbase.splunk.com/app/2890) & [Python for Scientific Computing](https://splunkbase.splunk.com/app/2882).
         5. Create a new events index called `otel` in the app `Sustainability_Toolkit` for the OpenTelemetry events streaming from the forwarder (in production, it is assumed that OpenTelemetry from multiple sources lands in this index; you could differentiate the sources, for example: Cisco Intersight, AWS CloudWatch etc. using the `source`, `sourcetype` or `host` fields in Splunk). 
      2. Follow instructions in the sections below to get the Sustainability Toolkit to work with Intersight OpenTelemetry data.
@@ -67,20 +77,6 @@ Some of these macros need to be adjusted to work with OpenTelemetry data as they
 > [!TIP]
 > All required setup for the toolkit & adjustments have been pre-packaged into a python script [available here](/py/otel-sst-quickstart.py) that can serve as a quickstart to automate these changes for you in your Splunk instance. It leverages the Splunk SDK for Python (splunklib). However, all steps have also been documented below for reference and manual execution (click on the sections below to view details).
 
-<details><summary><strong>Setting up electricity carbon intensity collection</strong></summary>
-            
-1. Create a new events index `electricity_carbon_intensity`.
-
-2. Navigate to the Splunk Add-on for Electricity Carbon Intensity to add your electricity maps account under **Configuration > Add** with the URL `https://api.electricitymap.org/v3` & your API key.
-
-3. Go to **Inputs > Create New Input**, select **Electricity Maps Carbon Intensity - Latest** & configure one or more electricity data inputs. See Electricity Maps zone documentation for a list of available zones:
-    1. Name: `myemaps`
-    2. Interval: `3600`
-    3. Index: `electricity_carbon_intensity`
-    4. Electricity Maps Account: `myemapsaccount`
-    5. Zone(s): `CH,DE,US-CAR-DUK,US-CAL-LDWP`
-
-</details>
 <details>
 <summary><strong>Adjust Power Macros</strong></summary>
 
