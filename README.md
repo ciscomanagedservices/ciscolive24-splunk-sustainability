@@ -46,17 +46,19 @@ graph LR;
     1. Download & install the following from Splunkbase: 
         1. [Splunk Sustainability Toolkit](https://splunkbase.splunk.com/app/6343).
         2. [Splunk Add-on for Electricity Carbon Intensity](https://splunkbase.splunk.com/app/7089).
-            1. Create a new events index `electricity_carbon_intensity`.
+            1. Create a new events index `electricity_carbon_intensity` within the Splunk Add-on for Electricity Carbon Intensity app.
             2. Navigate to the Splunk Add-on for Electricity Carbon Intensity to add your electricity maps account under **Configuration > Add** with the URL `https://api.electricitymap.org/v3` & your API key.
             3. Go to **Inputs > Create New Input**, select **Electricity Maps Carbon Intensity - Latest** & configure one or more electricity data inputs. See Electricity Maps zone documentation for a list of available zones:
                 ```
                 Name: myemaps
                 Interval: 3600
                 Index: electricity_carbon_intensity
-                Electricity Maps Account: myemapsaccount
+                Electricity Maps Account: electricitymaps
                 Zone(s): CH,DE,US-CAR-DUK,US-CAL-LDWP
                 ```
         3. (optional; if you want the ability to edit lookup files in Splunk GUI directly) [Splunk App for Lookup File Editing](https://splunkbase.splunk.com/app/1724).
+            1. The toolkit requires two lookups to be updated: `sample_cmdb.csv` `sample_sites.csv`.
+            2. `sample_cmdb.csv` is used to detail the assets from your inventory that are referenced in your input data and `sample_sites.csv` is used to detail the geographical sites where the assets are located.
         4. (optional; if you want predictive trends) [Machine Learning Toolkit](https://splunkbase.splunk.com/app/2890) & [Python for Scientific Computing](https://splunkbase.splunk.com/app/2882).
         5. Create a new events index called `otel` in the app `Sustainability_Toolkit` for the OpenTelemetry events streaming from the forwarder (in production, it is assumed that OpenTelemetry from multiple sources lands in this index; you could differentiate the sources, for example: Cisco Intersight, AWS CloudWatch etc. using the `source`, `sourcetype` or `host` fields in Splunk). 
      2. Follow instructions in the sections below to get the Sustainability Toolkit to work with Intersight OpenTelemetry data.
@@ -125,7 +127,17 @@ Some of these macros need to be adjusted to work with OpenTelemetry data as they
     | search index=`electricity-carbon-intensity-index` 
         [         
         | search index="otel" 
-        | stats values(hostname) as "Asset IP" 
+        | spath input=_raw output=resourceMetrics path=resourceMetrics{} 
+        | mvexpand resourceMetrics 
+        | spath input=resourceMetrics output=myAttributes path=resource{}.attributes{} 
+        | rex field=myAttributes max_match=1 "(?<myHostname>\"key\":\s*\"host\.name\",\"value\":\s*{\"stringValue\":\s*\".*?})" 
+        | rex field=myHostname max_match=1 ("?<myStringValue>stringValue\"\s*:\".*\"") 
+        | eval myHostnameValueTmp=split(myStringValue,":") 
+        | eval myHostnameValue=mvindex(myHostnameValueTmp,1) 
+        | eval myHostValue2=replace(myHostnameValue,"\\\\","") 
+        | eval myHostValue3=replace(myHostValue2,"\"","") 
+        | stats values(myHostValue3) as "Asset IP" 
+        | stats values(myHostValue3) as "Asset IP" 
         | mvexpand "Asset IP" 
         | lookup `cmdb-lookup-name` "Asset IP" OUTPUTNEW Site 
         | lookup `sites-lookup-name` "Site" OUTPUTNEW "Electricity CO2e per kWh Source" "Electricity CO2e per kWh Source Location Code" 
@@ -163,12 +175,12 @@ Some of these macros need to be adjusted to work with OpenTelemetry data as they
 
     ```spl
     | union 
-    [ `power-asset-location`] 
-    [ `electricity-carbon-intensity-for-assets` 
-    | foreach Intensity_* matchseg1=SEG1 
-        [ eval 
-            Intensity_SEG1 = exact('Intensity_SEG1'/1000)
-            ] ] 
+        [ `power-asset-location`] 
+        [ `electricity-carbon-intensity-for-assets` 
+        | foreach Intensity_* matchseg1=SEG1 
+            [ eval 
+                Intensity_SEG1 = exact('Intensity_SEG1'/1000)
+                ] ] 
     | stats first(*) as * by _time
     | foreach kW!*!location!* matchseg1=SEG1 matchseg2=SEG2 
         [ eval CO2e!SEG1 = exact(if(isnull('CO2e!SEG1'), 0, 'CO2e!SEG1') + ('<<FIELD>>' * 'Intensity_SEG2'/6))] 

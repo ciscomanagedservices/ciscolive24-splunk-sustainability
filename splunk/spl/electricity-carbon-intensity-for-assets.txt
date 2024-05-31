@@ -1,7 +1,16 @@
 | search index=`electricity-carbon-intensity-index` 
     [         
     | search index="otel" 
-    | stats values(hostname) as "Asset IP" 
+    | spath input=_raw output=resourceMetrics path=resourceMetrics{} 
+    | mvexpand resourceMetrics 
+    | spath input=resourceMetrics output=myAttributes path=resource{}.attributes{} 
+    | rex field=myAttributes max_match=1 "(?<myHostname>\"key\":\s*\"host\.name\",\"value\":\s*{\"stringValue\":\s*\".*?})" 
+    | rex field=myHostname max_match=1 ("?<myStringValue>stringValue\"\s*:\".*\"") 
+    | eval myHostnameValueTmp=split(myStringValue,":") 
+    | eval myHostnameValue=mvindex(myHostnameValueTmp,1) 
+    | eval myHostValue2=replace(myHostnameValue,"\\\\","") 
+    | eval myHostValue3=replace(myHostValue2,"\"","") 
+    | stats values(myHostValue3) as "Asset IP" 
     | mvexpand "Asset IP" 
     | lookup `cmdb-lookup-name` "Asset IP" OUTPUTNEW Site 
     | lookup `sites-lookup-name` "Site" OUTPUTNEW "Electricity CO2e per kWh Source" "Electricity CO2e per kWh Source Location Code" 
