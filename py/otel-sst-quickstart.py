@@ -309,6 +309,11 @@ d = _get_spl_from_file('power-asset-location.txt')
 rename_macro(s,'power-asset-location','power-asset-location-old')
 create_macro(s,'power-asset-location',d)
 
+# Step 4a - Modify electricity-carbon-intensity to remove time summarization
+d = _get_spl_from_file('electricity-carbon-intensity.txt')
+rename_macro(s,'electricity-carbon-intensity','electricity-carbon-intensity-old')
+create_macro(s,'electricity-carbon-intensity',d)
+
 
 # Step 5 - Modify Carbon Intensity macro
 rename_macro(s,'electricity-carbon-intensity-for-assets','electricity-carbon-intensity-for-assets-old')

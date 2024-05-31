@@ -1,0 +1,19 @@
+search index=`electricity-carbon-intensity-index` 
+sourcetype="NG:carbonintensity:postcode" OR sourcetype="EM:carbonintensity" 
+| eval co2perkWh=coalesce(carbonIntensity,'intensity.forecast') 
+| eval LocationCode=sourcetype."/".coalesce(zone,postcode)
+| eval LocationName=coalesce("GB/".shortname."/".postcode,"Zone/".zone)
+| eval LocationDetails=LocationName."|".LocationCode
+| eval _time=floor(_time) 
+| appendpipe 
+    [| head 1 
+    | fields _time 
+    | addinfo 
+    | eval TimeList=mvrange(info_min_time,info_max_time,"30m") 
+    | mvexpand TimeList 
+    | rename TimeList AS _time 
+    | eval LocationDetails=0, co2perkWh=""
+        ] 
+| xyseries _time, LocationDetails, co2perkWh 
+| fields - 0 
+| filldown
