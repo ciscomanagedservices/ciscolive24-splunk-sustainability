@@ -40,7 +40,7 @@ graph LR;
     2. [splunkforwarder](https://www.splunk.com/en_us/download/universal-forwarder.html?locale=en_us): Follow the instructions [here](https://docs.splunk.com/Documentation/Forwarder/9.2.1/Forwarder/Abouttheuniversalforwarder).
 3. Start data collection from Intersight
 	1. Run `otelcol`. (e.g. `./otelcol --config=./cfg/otelcol.yaml`).
-	2. Run `intersight-otel` (e.g. `./intersight-otel --config=./cfg/intersight_otel.toml`).
+	2. Run `intersight-otel` (e.g. `./intersight-otel --config-file=./cfg/intersight_otel.toml`).
 	3. You should start seeing data write to a file (e.g. `./data/otelcol-export.jsonl`).
 4. Setup Splunk Enterprise
     1. Download & install the following from Splunkbase: 
