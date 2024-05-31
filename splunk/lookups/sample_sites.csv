@@ -8,5 +8,6 @@ Birmingham Factory,NG:carbonintensity:postcode,B1,,52.479504,-1.9214564
 Manchester Factory,NG:carbonintensity:postcode,M1,,53.4774046,-2.2449836
 London DC,NG:carbonintensity:postcode,E14,,51.5068596,-0.054407
 London Office,NG:carbonintensity:postcode,E14,,51.5068596,-0.054407
-Research Triangle Park,EM:carbonintensity,US-CAR-DUK,,35.860830,-78.881520
-San Jose,EM:carbonintensity,US-CAL-CISO,,37.412950,-121.934510
+Research Triangle Park,EM:carbonintensity,US-CAR-DUK,,35.86083,-78.88152
+San Jose,EM:carbonintensity,US-CAL-CISO,,37.41295,-121.93451
+Poland DC,EM:carbonintensity,PL,,50.0647,19.945

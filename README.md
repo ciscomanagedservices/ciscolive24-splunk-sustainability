@@ -54,7 +54,7 @@ graph LR;
                 Interval: 3600
                 Index: electricity_carbon_intensity
                 Electricity Maps Account: electricitymaps
-                Zone(s): CH,DE,US-CAR-DUK,US-CAL-LDWP
+                Zone(s): CH,DE,PL,US-CAR-DUK,US-CAL-LDWP
                 ```
         3. (optional; if you want the ability to edit lookup files in Splunk GUI directly) [Splunk App for Lookup File Editing](https://splunkbase.splunk.com/app/1724).
             1. The toolkit requires two lookups to be updated: `sample_cmdb.csv` `sample_sites.csv`.

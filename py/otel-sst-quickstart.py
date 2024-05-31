@@ -279,7 +279,7 @@ if answer.lower()=='n' or answer.lower()=='no':
     z = urllib.request.urlopen("https://api.electricitymap.org/v3/zones").read()
     print(json.loads(z))
 
-my_zones= input('Enter the electricitymaps zones you want to collect data from, in a comma separated format. See above for the full list of zones (e.g. CH,DE,US-CAR-DUK,US-CAL-LDWP): ')
+my_zones= input('Enter the electricitymaps zones you want to collect data from, in a comma separated format. See above for the full list of zones (e.g. CH,DE,PL,US-CAR-DUK,US-CAL-LDWP): ')
 
 # Configure collection of latest data every hour.
 config = 'inputs'
