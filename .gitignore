@@ -1,2 +1,4 @@
 .DS_Store
 py/.ipynb_checkpoints/otel-sst-quickstart-checkpoint.py
+intersight_otel
+py/.venv

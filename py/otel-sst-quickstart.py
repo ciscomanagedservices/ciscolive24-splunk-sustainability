@@ -299,18 +299,6 @@ def _add_sample_data(i):
     s = splunk_auth(i)
     post_data_to_index(service=s, file_path=f, index='otel', sourcetype='_json', source='otelcol-export.json')
 
-    #Update search macros that reference sample lookup to use lookup files. Uploading the lookup file needs
-    # to be manually done by the user.
-    rename_macro(s,'cmdb-lookup-name','cmdb-lookup-name-old')
-    create_macro(s,'cmdb-lookup-name','otel_sample_cmdb.csv')
-
-    rename_macro(s,'sites-lookup-name','sites-lookup-name-old')
-    create_macro(s,'sites-lookup-name','otel_sample_sites.csv')
-    
-    input('\n***ACTION REQUIRED***\nYou must edit the lookup files to match hostnames to site information. \
-See the splunk/lookups folder for examples. We have automated changing the search macros cmdb-lookup-name \
-and sites-lookup-name that reference these files for you. Press enter when complete:')
-
 ##########################################################################################################
 
 #Authenticate to splunk
@@ -388,6 +376,20 @@ i['app'] = 'Sustainability_Toolkit'
 s = splunk_auth(i)
 
 #################################################
+
+#Update search macros that reference sample lookup to use lookup files. Uploading the lookup file needs
+# to be manually done by the user.
+rename_macro(s,'cmdb-lookup-name','cmdb-lookup-name-old')
+create_macro(s,'cmdb-lookup-name','otel_sample_cmdb.csv')
+
+rename_macro(s,'sites-lookup-name','sites-lookup-name-old')
+create_macro(s,'sites-lookup-name','otel_sample_sites.csv')
+
+input('\n***ACTION REQUIRED***\nYou must edit the lookup files to match hostnames to site information. \
+See the splunk/lookups folder for examples. We have automated changing the search macros cmdb-lookup-name \
+and sites-lookup-name that reference these files for you. Press enter when complete:')
+
+
 
 # Step 3 - Create power-otel search macro
 d = _get_spl_from_file('power-otel.txt')
