@@ -358,7 +358,7 @@ create_index(s, 'sustainability_toolkit_summary_electricity_metrics', index_type
 
 load_data = input('If you do not have an active OpenTelemetry data pipeline yet, we can load example \
 OpenTelemetry data from Cisco Intersight into a splunk index for you. \
-Do you want to load the example data? (y/n)')
+Do you want to load the example data? (y/n): ')
 
 if load_data.lower() == 'y' or load_data.lower() == 'yes':
     _add_sample_data(i)
@@ -381,10 +381,10 @@ then return back here:\n{url}\n\nUse the following information:\n Electricity Ma
 electricitymaps\n Base Product URL: https://api.electricitymap.org/v3\n API Key: [your API key]')
 
 time.sleep(5)
-input('\nOnce you complete this step return to this window and hit enter to proceed with the automation:')
+input('\nOnce you complete this step return to this window and hit enter to proceed with the automation: ')
 
 answer = input('Do you already know the name of your electricitymaps zones? If not, we can show \
-you the options here by saying no (y/n):')
+you the options here by saying no (y/n): ')
 
 if answer.lower()=='n' or answer.lower()=='no':
     z = urllib.request.urlopen("https://api.electricitymap.org/v3/zones").read()
