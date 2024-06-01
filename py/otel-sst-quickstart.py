@@ -255,27 +255,16 @@ def change_credential(service, username, realm, new_password):
 
 def post_data_to_index(service, file_path, index, sourcetype, source):
     '''Posts data payload to an existing index'''
-
-    total_lines = sum(1 for line in open(file_path))
-    lines_read = 0
-    percentage_interval = 5
-    current_percentage = 0
     
     with open(file_path, 'r') as file:
-        for line in file:
-            lines_read += 1
-            percentage = int((lines_read / total_lines) * 100)
-            if percentage >= current_percentage + percentage_interval:
-                print(f"Progress: {percentage}%")
-                current_percentage = percentage
-                
-                s.post(
-                    '/services/receivers/simple',
-                    source=source,
-                    sourcetype=sourcetype,
-                    index=index,
-                    body=line.strip()
-                )
+        for line in file:                
+            s.post(
+                '/services/receivers/simple',
+                source=source,
+                sourcetype=sourcetype,
+                index=index,
+                body=line.strip()
+            )
     print(f'Wrote sample data from {file_path} to {index}.')
 
         
@@ -301,27 +290,16 @@ def _add_sample_data(i):
     f = _get_sample_data_path('emaps-export.jsonl')    
     i['app'] = 'TA-electricity-carbon-intensity'
     s = splunk_auth(i)
-    post_data_to_index(service=s, file_path=f, index='test', sourcetype='EM:carbonintensity', 
+    post_data_to_index(service=s, file_path=f, index='electricity_carbon_intensity', sourcetype='EM:carbonintensity', 
                         source='electricity_maps_carbon_intensity_latest')
 
     #Add example OTel JSON
     f = _get_sample_data_path('otelcol-export.jsonl')
     i['app'] = 'Sustainability_Toolkit'
     s = splunk_auth(i)
-    post_data_to_index(service=s, file_path=f, index='testo', sourcetype='_json', source='otelcol-export.json')
+    post_data_to_index(service=s, file_path=f, index='otel', sourcetype='_json', source='otelcol-export.json')
 
-
-    # #Add example emaps historical data aligned to the sample file
-    # i['app'] = 'TA-electricity-carbon-intensity'
-    # f = _get_sample_data_path('emaps-export.jsonl')    
-    # create_input(service=s,file_path=f,index='electricity_carbon_intensity',sourcetype='EM:carbonintensity') 
-
-    # #Add example OTel JSON
-    # i['app'] = 'Sustainability_Toolkit'
-    # f = _get_sample_data_path('otelcol-export.jsonl')
-    # create_input(service=s,file_path=f,index='otel',sourcetype='_json')
-
-   #Update search macros that reference sample lookup to use lookup files. Uploading the lookup file needs
+    #Update search macros that reference sample lookup to use lookup files. Uploading the lookup file needs
     # to be manually done by the user.
     rename_macro(s,'cmdb-lookup-name','cmdb-lookup-name-old')
     create_macro(s,'cmdb-lookup-name','otel_sample_cmdb.csv')
@@ -329,7 +307,7 @@ def _add_sample_data(i):
     rename_macro(s,'sites-lookup-name','sites-lookup-name-old')
     create_macro(s,'sites-lookup-name','otel_sample_sites.csv')
     
-    input('***ACTION REQUIRED***\nYou must edit the lookup files to match hostnames to site information. \
+    input('\n***ACTION REQUIRED***\nYou must edit the lookup files to match hostnames to site information. \
 See the splunk/lookups folder for examples. We have automated changing the search macros cmdb-lookup-name \
 and sites-lookup-name that reference these files for you. Press enter when complete:')
 
@@ -356,9 +334,9 @@ create_index(s, 'sustainability_toolkit_summary_electricity_metrics', index_type
 
 # Step 1b - See if the user wants the cold snapshot sample OTel data loaded in
 
-load_data = input('If you do not have an active OpenTelemetry data pipeline yet, we can load example \
+load_data = input('\nIf you do not have an active OpenTelemetry data pipeline yet, we can load example \
 OpenTelemetry data from Cisco Intersight into a splunk index for you. \
-Do you want to load the example data? (y/n): ')
+\n\nDo you want to load the example data? (y/n): ')
 
 if load_data.lower() == 'y' or load_data.lower() == 'yes':
     _add_sample_data(i)
