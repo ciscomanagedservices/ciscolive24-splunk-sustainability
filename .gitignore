@@ -4,3 +4,4 @@ intersight_otel
 py/.venv
 secrets/
 otelcol
+data/otelcol-export-live.jsonl
