@@ -1,6 +1,6 @@
 ## BRKGRN-1022: Using Splunk & OpenTelemetry for centralized insights to achieve your sustainability goals
 
-[About Cisco Live](https://www.ciscolive.com/global.html) | [**Link to Session Presentation**](/static/) | [**Link to Session Recording**](https://www.ciscolive.com) 
+[About Cisco Live](https://www.ciscolive.com/global.html) | [**Link to Session Presentation**](/static/BRKGRN-1022.pdf) | [**Link to Session Recording**](https://www.ciscolive.com/on-demand/on-demand-library.html?search=BRKGRN-1022#/) 
 
 ### Session Demo Objective
 
