@@ -10,7 +10,7 @@ processors:
 
 exporters:
   file:
-    path: ./data/otelcol-export.jsonl
+    path: ./data/otelcol-export-live.jsonl
 
 extensions:
   health_check:
