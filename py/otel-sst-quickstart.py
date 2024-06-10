@@ -321,6 +321,8 @@ create_index(s, 'sustainability_toolkit_summary_asset_metrics', index_type='metr
 create_index(s, 'sustainability_toolkit_summary_electricity_metrics', index_type='metric')
 
 # Step 1b - See if the user wants the cold snapshot sample OTel data loaded in
+# Note: this script needs to be run on the splunk server itself to place a file, 
+# otherwise creating the data file will fail and you will have to copy it manually.
 
 load_data = input('\nIf you do not have an active OpenTelemetry data pipeline yet, we can load example \
 OpenTelemetry data from Cisco Intersight into a splunk index for you. \

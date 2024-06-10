@@ -3,7 +3,7 @@ intersight_accept_invalid_certs = true
 
 # You need to add the certificate key_file, and also update the key_id. These are available in Intersight> System> Settings> API> API Keys.
 key_file = "./secrets/intersight.pem"
-key_id = "5e878d3e7564612d304bbaaf/6616d9c67564613101559a18/6616dae67564613101559ebc"
+key_id = "ffffffffffffffffffffffff/ffffffffffffffffffffffff/ffffffffffffffffffffffff"
 
 [[tspollers]]
 name = "hw.host.power"
